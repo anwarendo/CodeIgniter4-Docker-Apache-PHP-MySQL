@@ -1,9 +1,7 @@
-version: '3'
+version: '3.1'
 services:
     db:
-        build:
-            context: .
-            dockerfile: docker/mysql/Dockerfile
+        image: mysql:5.7
         environment: 
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -14,29 +12,25 @@ services:
         ports:
             - 3306:3306
     web:
-        build:
-            context: .
-            dockerfile: docker/apache/Dockerfile
-            args:
-                uid: ${UID}
-        environment:
-            - APACHE_RUN_USER=#${UID}
-            - APACHE_RUN_GROUP=#${UID}
+        image: anwarendo/php:7.4
+        # environment:
+        #     - APACHE_RUN_USER=#${UID}
+        #     - APACHE_RUN_GROUP=#${UID}
         restart: unless-stopped
         volumes: 
             - ./src:/var/www/html
             - ./apache_log:/var/log/apache2
         ports:
-            - 80:80
+            - 13000:80
         depends_on: 
             - db
         links:
             - db
-    adminer:
-        image: adminer
-        restart: unless-stopped
-        ports:
-            - 8080:8080
+    # adminer:
+    #     image: adminer
+    #     restart: unless-stopped
+    #     ports:
+    #         - 8080:8080
 volumes:
     db_data:
     src:
